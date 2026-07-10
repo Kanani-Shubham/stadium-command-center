@@ -14,12 +14,17 @@ import { incidentRateLimiter } from "../lib/rateLimiter";
 const router: IRouter = Router();
 
 router.get("/incidents", async (_req, res): Promise<void> => {
-  const incidents = await db
-    .select()
-    .from(incidentsTable)
-    .orderBy(incidentsTable.createdAt);
+  try {
+    const rows = await db
+      .select()
+      .from(incidentsTable)
+      .orderBy(incidentsTable.createdAt);
 
-  res.json(ListIncidentsResponse.parse(incidents.reverse()));
+    res.json(ListIncidentsResponse.parse(rows.reverse()));
+  } catch (err) {
+    _req.log?.error({ err }, "Failed to list incidents");
+    res.status(500).json({ error: "Failed to retrieve incidents" });
+  }
 });
 
 router.post("/incidents", incidentRateLimiter, async (req, res): Promise<void> => {
@@ -29,18 +34,23 @@ router.post("/incidents", incidentRateLimiter, async (req, res): Promise<void> =
     return;
   }
 
-  const [incident] = await db
-    .insert(incidentsTable)
-    .values({
-      location: parsed.data.location,
-      description: parsed.data.description,
-      severity: parsed.data.severity,
-      reportedBy: parsed.data.reportedBy ?? null,
-      status: "open",
-    })
-    .returning();
+  try {
+    const [incident] = await db
+      .insert(incidentsTable)
+      .values({
+        location: parsed.data.location,
+        description: parsed.data.description,
+        severity: parsed.data.severity,
+        reportedBy: parsed.data.reportedBy ?? null,
+        status: "open",
+      })
+      .returning();
 
-  res.status(201).json(CreateIncidentResponse.parse(incident));
+    res.status(201).json(CreateIncidentResponse.parse(incident));
+  } catch (err) {
+    req.log?.error({ err }, "Failed to create incident");
+    res.status(500).json({ error: "Failed to create incident" });
+  }
 });
 
 router.patch("/incidents/:id", async (req, res): Promise<void> => {
@@ -57,23 +67,28 @@ router.patch("/incidents/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  const updateData: Record<string, unknown> = { updatedAt: new Date() };
-  if (parsed.data.status !== undefined) updateData["status"] = parsed.data.status;
-  if (parsed.data.aiPriority !== undefined) updateData["aiPriority"] = parsed.data.aiPriority;
-  if (parsed.data.aiRecommendation !== undefined) updateData["aiRecommendation"] = parsed.data.aiRecommendation;
+  try {
+    const updateData: Record<string, unknown> = { updatedAt: new Date() };
+    if (parsed.data.status !== undefined) updateData["status"] = parsed.data.status;
+    if (parsed.data.aiPriority !== undefined) updateData["aiPriority"] = parsed.data.aiPriority;
+    if (parsed.data.aiRecommendation !== undefined) updateData["aiRecommendation"] = parsed.data.aiRecommendation;
 
-  const [incident] = await db
-    .update(incidentsTable)
-    .set(updateData)
-    .where(eq(incidentsTable.id, params.data.id))
-    .returning();
+    const [incident] = await db
+      .update(incidentsTable)
+      .set(updateData)
+      .where(eq(incidentsTable.id, params.data.id))
+      .returning();
 
-  if (!incident) {
-    res.status(404).json({ error: "Incident not found" });
-    return;
+    if (!incident) {
+      res.status(404).json({ error: "Incident not found" });
+      return;
+    }
+
+    res.json(UpdateIncidentResponse.parse(incident));
+  } catch (err) {
+    req.log?.error({ err }, "Failed to update incident");
+    res.status(500).json({ error: "Failed to update incident" });
   }
-
-  res.json(UpdateIncidentResponse.parse(incident));
 });
 
 export default router;

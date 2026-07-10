@@ -1,3 +1,17 @@
+/** Named constants — avoids magic numbers throughout crowd simulation */
+const CROWD_WINDOW_MS = 30_000; // seed rotates every 30 s
+const JITTER_RANGE = 20; // ±10% jitter divisor
+const JITTER_OFFSET = 0.1;
+const FLOW_RATE_SCALE = 180;
+const FLOW_RATE_BASE = 40;
+const DENSITY_CRITICAL = 0.9;
+const DENSITY_CONGESTED = 0.7;
+const WAIT_HIGH_DENSITY_THRESHOLD = 0.7;
+const WAIT_HIGH_DENSITY_SCALE = 25;
+const WAIT_HIGH_DENSITY_OFFSET = 0.5;
+const WAIT_LOW_DENSITY_SCALE = 5;
+const WAIT_LOW_DENSITY_OFFSET = 0.2;
+
 export interface GateCrowdData {
   id: string;
   name: string;
@@ -11,7 +25,10 @@ export interface GateCrowdData {
   trend: "increasing" | "stable" | "decreasing";
 }
 
-const BASE_GATES: Omit<GateCrowdData, "density" | "currentCount" | "waitMinutes" | "flowRate" | "status" | "trend">[] = [
+const BASE_GATES: Omit<
+  GateCrowdData,
+  "density" | "currentCount" | "waitMinutes" | "flowRate" | "status" | "trend"
+>[] = [
   { id: "G-N1", name: "Gate North 1", section: "North Stand", capacity: 3200 },
   { id: "G-N2", name: "Gate North 2", section: "North Stand", capacity: 3200 },
   { id: "G-S1", name: "Gate South 1", section: "South Stand", capacity: 4000 },
@@ -26,31 +43,40 @@ const BASE_GATES: Omit<GateCrowdData, "density" | "currentCount" | "waitMinutes"
   { id: "G-STAFF", name: "Staff Entry", section: "Operations", capacity: 1200 },
 ];
 
+/** Baseline densities per gate — tuned to produce realistic mixed scenarios */
+const BASE_DENSITIES = [0.82, 0.65, 0.91, 0.55, 0.48, 0.72, 0.38, 0.61, 0.29, 0.15, 0.44, 0.35] as const;
+
 function computeStatus(density: number): GateCrowdData["status"] {
-  if (density >= 0.9) return "critical";
-  if (density >= 0.7) return "congested";
+  if (density >= DENSITY_CRITICAL) return "critical";
+  if (density >= DENSITY_CONGESTED) return "congested";
   return "open";
 }
 
 function computeTrend(density: number, seed: number): GateCrowdData["trend"] {
-  const r = (seed % 3);
-  if (density > 0.75) return r === 0 ? "increasing" : "stable";
-  if (density < 0.3) return r === 0 ? "decreasing" : "stable";
-  return ["increasing", "stable", "decreasing"][r] as GateCrowdData["trend"];
+  const bucket = seed % 3;
+  if (density > 0.75) return bucket === 0 ? "increasing" : "stable";
+  if (density < 0.3) return bucket === 0 ? "decreasing" : "stable";
+  return (["increasing", "stable", "decreasing"] as const)[bucket] ?? "stable";
 }
 
-/** Returns simulated live crowd data with slight randomization */
+function computeWaitMinutes(density: number): number {
+  if (density > WAIT_HIGH_DENSITY_THRESHOLD) {
+    return Math.round((density - WAIT_HIGH_DENSITY_OFFSET) * WAIT_HIGH_DENSITY_SCALE);
+  }
+  return Math.max(0, Math.round((density - WAIT_LOW_DENSITY_OFFSET) * WAIT_LOW_DENSITY_SCALE));
+}
+
+/** Returns simulated live crowd data. Seed rotates every 30 s for realistic drift. */
 export function getLiveCrowdData(): GateCrowdData[] {
-  const seed = Math.floor(Date.now() / 30000); // changes every 30s
+  const seed = Math.floor(Date.now() / CROWD_WINDOW_MS);
 
   return BASE_GATES.map((gate, idx) => {
-    // Deterministic-ish density per gate based on seed
-    const base = [0.82, 0.65, 0.91, 0.55, 0.48, 0.72, 0.38, 0.61, 0.29, 0.15, 0.44, 0.35][idx] ?? 0.5;
-    const jitter = ((seed + idx * 7) % 20) / 100 - 0.1; // ±10%
+    const base = BASE_DENSITIES[idx] ?? 0.5;
+    const jitter = ((seed + idx * 7) % JITTER_RANGE) / 100 - JITTER_OFFSET;
     const density = Math.min(1, Math.max(0, base + jitter));
     const currentCount = Math.round(density * gate.capacity);
-    const waitMinutes = density > 0.7 ? Math.round((density - 0.5) * 25) : Math.max(0, Math.round((density - 0.2) * 5));
-    const flowRate = Math.round(density * 180 + 40);
+    const waitMinutes = computeWaitMinutes(density);
+    const flowRate = Math.round(density * FLOW_RATE_SCALE + FLOW_RATE_BASE);
 
     return {
       ...gate,

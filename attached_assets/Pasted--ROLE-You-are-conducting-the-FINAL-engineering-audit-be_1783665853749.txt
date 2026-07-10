@@ -1,0 +1,534 @@
+# ROLE
+
+You are conducting the FINAL engineering audit before this project is submitted to a Hack2Skill AI-evaluated hackathon.
+
+Act as:
+
+• Google Staff Software Engineer
+• Anthropic Principal Engineer
+• Microsoft Principal Architect
+• Senior Security Engineer
+• QA Automation Lead
+• Accessibility Specialist
+• Performance Engineer
+• Technical Writer
+• DevOps Engineer
+• OSS Maintainer
+
+Your responsibility is NOT to add random features.
+
+Your responsibility is to review the ENTIRE repository exactly like an enterprise code review.
+
+Assume the repository is feature complete.
+
+Your goal is to improve engineering quality everywhere.
+
+Never rewrite working logic unless it improves quality.
+
+==================================================
+
+PROJECT STATUS
+
+The application is complete.
+
+UI is complete.
+
+Backend is complete.
+
+Features are complete.
+
+Now perform a complete engineering audit.
+
+==================================================
+
+OBJECTIVE
+
+Review every file.
+
+Every folder.
+
+Every component.
+
+Every API.
+
+Every test.
+
+Every configuration.
+
+Every document.
+
+Every dependency.
+
+Every import.
+
+Every README section.
+
+Improve anything that can reasonably improve the project's quality according to the evaluation criteria.
+
+Do not introduce unnecessary complexity.
+
+==================================================
+
+EVALUATION CRITERIA
+
+The repository should demonstrate excellence in the following areas.
+
+==================================================
+
+1. CODE QUALITY (Highest Priority)
+
+Review the complete codebase.
+
+Improve:
+
+Folder organization
+
+Architecture consistency
+
+Naming consistency
+
+Component structure
+
+Function length
+
+File size
+
+Code duplication
+
+Shared utilities
+
+Type safety
+
+Strict TypeScript
+
+Unused variables
+
+Unused imports
+
+Magic numbers
+
+Hardcoded values
+
+Constants
+
+Enums
+
+Interfaces
+
+Error handling
+
+Logging
+
+Comments
+
+Documentation
+
+Custom hooks
+
+Reusable components
+
+Dependency management
+
+SOLID
+
+DRY
+
+KISS
+
+Feature isolation
+
+Maintainability
+
+Scalability
+
+Readability
+
+Developer experience
+
+Ensure:
+
+• No dead code
+
+• No TODO comments
+
+• No placeholder code
+
+• No debugging code
+
+• No duplicated business logic
+
+• No unnecessary complexity
+
+==================================================
+
+2. PROBLEM ALIGNMENT (Highest Priority)
+
+Audit every feature.
+
+For every screen determine:
+
+Why does it exist?
+
+How does it solve the official challenge?
+
+Does it directly support:
+
+Navigation
+
+Crowd Management
+
+Accessibility
+
+Transportation
+
+Sustainability
+
+Multilingual Assistance
+
+Operational Intelligence
+
+Real-Time Decision Support
+
+If any feature does not clearly align, improve it.
+
+Generate a Challenge Alignment table in README.
+
+==================================================
+
+3. SECURITY
+
+Perform complete security review.
+
+Implement or improve:
+
+Input validation
+
+Output sanitization
+
+Authentication
+
+Authorization
+
+RBAC
+
+Secure headers
+
+Rate limiting
+
+Helmet
+
+CSP
+
+CORS
+
+Environment variables
+
+Secret management
+
+Dependency audit
+
+OWASP best practices
+
+Audit logging
+
+Secure storage
+
+Session management
+
+==================================================
+
+4. PERFORMANCE
+
+Review entire application.
+
+Improve:
+
+React rendering
+
+Memoization
+
+Lazy loading
+
+Code splitting
+
+Tree shaking
+
+Image optimization
+
+Caching
+
+API efficiency
+
+Pagination
+
+Bundle size
+
+Database queries
+
+State management
+
+Network requests
+
+Loading states
+
+==================================================
+
+5. TESTING
+
+Create a professional testing strategy.
+
+Create or improve:
+
+tests/
+
+unit/
+
+integration/
+
+api/
+
+components/
+
+hooks/
+
+e2e/
+
+accessibility/
+
+Create meaningful test cases.
+
+Test:
+
+Business logic
+
+Utilities
+
+Components
+
+Forms
+
+Authentication
+
+API routes
+
+Navigation
+
+Error handling
+
+Edge cases
+
+Generate coverage configuration.
+
+Target excellent coverage.
+
+Ensure tests are deterministic.
+
+==================================================
+
+6. ACCESSIBILITY
+
+Audit every page.
+
+Ensure WCAG 2.1 AA.
+
+Improve:
+
+ARIA labels
+
+Keyboard navigation
+
+Semantic HTML
+
+Focus management
+
+Screen readers
+
+Color contrast
+
+Reduced motion
+
+Accessible tables
+
+Accessible forms
+
+Accessible dialogs
+
+Accessible charts
+
+Responsive layouts
+
+==================================================
+
+README AUDIT
+
+Rewrite README completely.
+
+Professional structure.
+
+Include:
+
+Project Overview
+
+Challenge Statement
+
+Problem Analysis
+
+Solution
+
+Architecture
+
+Folder Structure
+
+Technology Stack
+
+System Design
+
+AI Workflow
+
+Features
+
+Screenshots
+
+Architecture Diagram
+
+Database Diagram
+
+Installation
+
+Configuration
+
+Environment Variables
+
+Running Locally
+
+Deployment
+
+Testing
+
+Accessibility
+
+Performance
+
+Security
+
+Folder Structure
+
+API Documentation
+
+AI Design
+
+Challenge Alignment Table
+
+Future Improvements
+
+Contributors
+
+License
+
+Badges
+
+Repository Statistics
+
+==================================================
+
+DOCUMENTATION
+
+Generate or improve:
+
+README.md
+
+SECURITY.md
+
+CONTRIBUTING.md
+
+CHANGELOG.md
+
+CODE_OF_CONDUCT.md
+
+ARCHITECTURE.md
+
+API.md
+
+DATABASE.md
+
+AI.md
+
+DEPLOYMENT.md
+
+TESTING.md
+
+ACCESSIBILITY.md
+
+PERFORMANCE.md
+
+==================================================
+
+PROJECT STRUCTURE
+
+Review the complete repository.
+
+Move files if necessary.
+
+Rename files if necessary.
+
+Standardize naming.
+
+Remove redundant files.
+
+Ensure every folder has a clear purpose.
+
+==================================================
+
+DEVELOPER EXPERIENCE
+
+Improve:
+
+ESLint
+
+Prettier
+
+Husky
+
+lint-staged
+
+GitHub Actions
+
+EditorConfig
+
+VS Code settings
+
+Environment examples
+
+Scripts
+
+Package scripts
+
+Error messages
+
+==================================================
+
+FINAL REVIEW
+
+After all improvements are complete:
+
+Perform a second complete repository audit.
+
+List every improvement made.
+
+Identify any remaining weaknesses.
+
+Improve them.
+
+Repeat until no significant engineering issues remain.
+
+==================================================
+
+IMPORTANT
+
+Do not create unnecessary features.
+
+Do not make cosmetic changes only.
+
+Every modification must improve maintainability, reliability, security, performance, accessibility, testing, documentation, or challenge alignment.
+
+Treat this repository as if it will undergo an enterprise engineering review and optimize it to satisfy the published Hack2Skill evaluation criteria.

@@ -1,0 +1,2 @@
+- [StadiumSense architecture](stadiumsense-arch.md) — contract-first OpenAPI → codegen; Groq server-side only; dual-key rotation in groq.ts
+- [StadiumSense audit patterns](stadiumsense-audit.md) — magic numbers → named constants; safeParseJson helper; LANGUAGE_MAP shared constant; ErrorBoundary added; React.memo on GateHeatmap

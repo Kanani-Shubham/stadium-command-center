@@ -12,6 +12,46 @@ import { aiRateLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
 
+// ── Shared constants ─────────────────────────────────────────────────────────
+
+const LANGUAGE_MAP: Record<string, string> = {
+  en: "English",
+  hi: "Hindi",
+  es: "Spanish",
+  fr: "French",
+  ar: "Arabic",
+  pt: "Portuguese",
+};
+
+const SEVERITY_PRIORITY_MAP: Record<string, "P1" | "P2" | "P3" | "P4"> = {
+  critical: "P1",
+  high: "P2",
+  medium: "P3",
+  low: "P4",
+};
+
+const DENSITY_CRITICAL_THRESHOLD = 0.85;
+const DENSITY_HIGH_THRESHOLD = 0.7;
+const DENSITY_MEDIUM_THRESHOLD = 0.5;
+
+/** Attempts JSON.parse on raw AI output; returns fallback on malformed response. */
+function safeParseJson<T>(raw: string, fallback: T): T {
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function resolveRiskLevel(avgDensity: number): "low" | "medium" | "high" | "critical" {
+  if (avgDensity > DENSITY_CRITICAL_THRESHOLD) return "critical";
+  if (avgDensity > DENSITY_HIGH_THRESHOLD) return "high";
+  if (avgDensity > DENSITY_MEDIUM_THRESHOLD) return "medium";
+  return "low";
+}
+
+// ── AI Copilot ───────────────────────────────────────────────────────────────
+
 router.post("/ai/copilot", aiRateLimiter, async (req, res): Promise<void> => {
   const parsed = AiCopilotChatBody.safeParse(req.body);
   if (!parsed.success) {
@@ -54,11 +94,13 @@ Always prioritize fan safety first, then operational efficiency.`,
 
     res.json({ reply, tokensUsed });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "AI service error";
+    const errMessage = err instanceof Error ? err.message : "AI service error";
     req.log.error({ err }, "AI copilot error");
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: errMessage });
   }
 });
+
+// ── Crowd Analysis ────────────────────────────────────────────────────────────
 
 router.post("/ai/crowd-analysis", aiRateLimiter, async (req, res): Promise<void> => {
   const parsed = AiCrowdAnalysisBody.safeParse(req.body);
@@ -69,7 +111,7 @@ router.post("/ai/crowd-analysis", aiRateLimiter, async (req, res): Promise<void>
 
   try {
     const { gates, matchPhase } = parsed.data;
-    const criticalGates = gates.filter((g) => g.density >= 0.85);
+    const criticalGates = gates.filter((g) => g.density >= DENSITY_CRITICAL_THRESHOLD);
     const avgDensity = gates.reduce((s, g) => s + g.density, 0) / gates.length;
     const maxWait = Math.max(...gates.map((g) => g.waitMinutes));
 
@@ -99,31 +141,29 @@ Respond ONLY with valid JSON, no markdown.`;
       600,
     );
 
-    let parsed2: {
+    type CrowdAnalysisResult = {
       prediction: string;
       recommendations: string[];
       riskLevel: "low" | "medium" | "high" | "critical";
       summary: string;
     };
 
-    try {
-      parsed2 = JSON.parse(raw);
-    } catch {
-      parsed2 = {
-        prediction: raw.slice(0, 300),
-        recommendations: ["Monitor gate conditions closely", "Prepare overflow management teams"],
-        riskLevel: avgDensity > 0.85 ? "critical" : avgDensity > 0.7 ? "high" : avgDensity > 0.5 ? "medium" : "low",
-        summary: "AI analysis complete — review gate conditions.",
-      };
-    }
+    const result = safeParseJson<CrowdAnalysisResult>(raw, {
+      prediction: raw.slice(0, 300),
+      recommendations: ["Monitor gate conditions closely", "Prepare overflow management teams"],
+      riskLevel: resolveRiskLevel(avgDensity),
+      summary: "AI analysis complete — review gate conditions.",
+    });
 
-    res.json(parsed2);
+    res.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "AI service error";
+    const errMessage = err instanceof Error ? err.message : "AI service error";
     req.log.error({ err }, "Crowd analysis error");
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: errMessage });
   }
 });
+
+// ── Smart Navigation ──────────────────────────────────────────────────────────
 
 router.post("/ai/navigation", aiRateLimiter, async (req, res): Promise<void> => {
   const parsed = AiNavigationBody.safeParse(req.body);
@@ -134,11 +174,7 @@ router.post("/ai/navigation", aiRateLimiter, async (req, res): Promise<void> => 
 
   try {
     const { query, currentLocation, language } = parsed.data;
-
-    const langMap: Record<string, string> = {
-      en: "English", hi: "Hindi", es: "Spanish", fr: "French", ar: "Arabic", pt: "Portuguese",
-    };
-    const targetLang = langMap[language ?? "en"] ?? "English";
+    const targetLang = LANGUAGE_MAP[language ?? "en"] ?? "English";
 
     const prompt = `You are a FIFA World Cup 2026 stadium navigation assistant.
 
@@ -168,25 +204,29 @@ Respond ONLY with valid JSON, no markdown.`;
       500,
     );
 
-    let result: { answer: string; nearestLocation: string | null; estimatedWalkMinutes: number | null; directions: string[] };
-    try {
-      result = JSON.parse(raw);
-    } catch {
-      result = {
-        answer: raw.slice(0, 400),
-        nearestLocation: null,
-        estimatedWalkMinutes: null,
-        directions: [],
-      };
-    }
+    type NavigationResult = {
+      answer: string;
+      nearestLocation: string | null;
+      estimatedWalkMinutes: number | null;
+      directions: string[];
+    };
+
+    const result = safeParseJson<NavigationResult>(raw, {
+      answer: raw.slice(0, 400),
+      nearestLocation: null,
+      estimatedWalkMinutes: null,
+      directions: [],
+    });
 
     res.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "AI service error";
+    const errMessage = err instanceof Error ? err.message : "AI service error";
     req.log.error({ err }, "Navigation AI error");
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: errMessage });
   }
 });
+
+// ── Multilingual Translation ──────────────────────────────────────────────────
 
 router.post("/ai/translate", aiRateLimiter, async (req, res): Promise<void> => {
   const parsed = AiTranslateBody.safeParse(req.body);
@@ -197,12 +237,8 @@ router.post("/ai/translate", aiRateLimiter, async (req, res): Promise<void> => {
 
   try {
     const { text, targetLanguage, sourceLanguage } = parsed.data;
-
-    const langNames: Record<string, string> = {
-      en: "English", hi: "Hindi", es: "Spanish", fr: "French", ar: "Arabic", pt: "Portuguese",
-    };
-    const targetName = langNames[targetLanguage] ?? targetLanguage;
-    const sourceName = sourceLanguage ? (langNames[sourceLanguage] ?? sourceLanguage) : "auto-detected";
+    const targetName = LANGUAGE_MAP[targetLanguage] ?? targetLanguage;
+    const sourceName = sourceLanguage ? (LANGUAGE_MAP[sourceLanguage] ?? sourceLanguage) : "auto-detected";
 
     const prompt = `You are a multilingual assistant for FIFA World Cup 2026 fans.
 
@@ -223,20 +259,22 @@ Respond ONLY with valid JSON, no markdown.`;
       400,
     );
 
-    let result: { translatedText: string; detectedSourceLanguage: string | null };
-    try {
-      result = JSON.parse(raw);
-    } catch {
-      result = { translatedText: raw.slice(0, 500), detectedSourceLanguage: null };
-    }
+    type TranslationResult = { translatedText: string; detectedSourceLanguage: string | null };
+
+    const result = safeParseJson<TranslationResult>(raw, {
+      translatedText: raw.slice(0, 500),
+      detectedSourceLanguage: null,
+    });
 
     res.json({ ...result, targetLanguage });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "AI service error";
+    const errMessage = err instanceof Error ? err.message : "AI service error";
     req.log.error({ err }, "Translation AI error");
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: errMessage });
   }
 });
+
+// ── Transportation & Sustainability ───────────────────────────────────────────
 
 router.post("/ai/transportation-recommendation", aiRateLimiter, async (req, res): Promise<void> => {
   const parsed = AiTransportationRecommendationBody.safeParse(req.body);
@@ -277,25 +315,29 @@ Respond ONLY with valid JSON, no markdown.`;
       500,
     );
 
-    let result: { recommendation: string; urgentActions: string[]; sustainabilitySummary: string; overallStatus: "normal" | "advisory" | "warning" | "critical" };
-    try {
-      result = JSON.parse(raw);
-    } catch {
-      result = {
-        recommendation: raw.slice(0, 300),
-        urgentActions: ["Monitor transport load levels"],
-        sustainabilitySummary: "Sustainability metrics under review.",
-        overallStatus: "advisory",
-      };
-    }
+    type TransportResult = {
+      recommendation: string;
+      urgentActions: string[];
+      sustainabilitySummary: string;
+      overallStatus: "normal" | "advisory" | "warning" | "critical";
+    };
+
+    const result = safeParseJson<TransportResult>(raw, {
+      recommendation: raw.slice(0, 300),
+      urgentActions: ["Monitor transport load levels"],
+      sustainabilitySummary: "Sustainability metrics under review.",
+      overallStatus: "advisory",
+    });
 
     res.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "AI service error";
+    const errMessage = err instanceof Error ? err.message : "AI service error";
     req.log.error({ err }, "Transportation AI error");
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: errMessage });
   }
 });
+
+// ── Incident Priority ─────────────────────────────────────────────────────────
 
 router.post("/ai/incident-priority", aiRateLimiter, async (req, res): Promise<void> => {
   const parsed = AiIncidentPriorityBody.safeParse(req.body);
@@ -335,27 +377,29 @@ Respond ONLY with valid JSON, no markdown.`;
       400,
     );
 
-    let result: { suggestedPriority: "P1" | "P2" | "P3" | "P4"; priorityLabel: string; nearestResponse: string; recommendation: string; estimatedResponseMinutes: number };
-    try {
-      result = JSON.parse(raw);
-    } catch {
-      const priorityMap: Record<string, "P1" | "P2" | "P3" | "P4"> = {
-        critical: "P1", high: "P2", medium: "P3", low: "P4",
-      };
-      result = {
-        suggestedPriority: priorityMap[severity] ?? "P3",
-        priorityLabel: severity === "critical" ? "Immediate Emergency" : "Standard Response",
-        nearestResponse: "Nearest response unit",
-        recommendation: raw.slice(0, 300),
-        estimatedResponseMinutes: severity === "critical" ? 3 : severity === "high" ? 7 : 12,
-      };
-    }
+    type IncidentPriorityResult = {
+      suggestedPriority: "P1" | "P2" | "P3" | "P4";
+      priorityLabel: string;
+      nearestResponse: string;
+      recommendation: string;
+      estimatedResponseMinutes: number;
+    };
+
+    const RESPONSE_MINUTES: Record<string, number> = { critical: 3, high: 7, medium: 12, low: 20 };
+
+    const result = safeParseJson<IncidentPriorityResult>(raw, {
+      suggestedPriority: SEVERITY_PRIORITY_MAP[severity] ?? "P3",
+      priorityLabel: severity === "critical" ? "Immediate Emergency" : "Standard Response",
+      nearestResponse: "Nearest response unit",
+      recommendation: raw.slice(0, 300),
+      estimatedResponseMinutes: RESPONSE_MINUTES[severity] ?? 12,
+    });
 
     res.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "AI service error";
+    const errMessage = err instanceof Error ? err.message : "AI service error";
     req.log.error({ err }, "Incident priority AI error");
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: errMessage });
   }
 });
 
