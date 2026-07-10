@@ -1,24 +1,34 @@
 import Groq from "groq-sdk";
 import { logger } from "./logger";
 
-const apiKey = process.env["GROQ_API_KEY"];
+const apiKey1 = process.env["GROQ_API_KEY"];
+const apiKey2 = process.env["GROQ_API_KEY_2"];
 
-if (!apiKey) {
-  logger.warn("GROQ_API_KEY is not set — AI endpoints will return an error until it is configured");
+if (!apiKey1 && !apiKey2) {
+  logger.warn(
+    "Neither GROQ_API_KEY nor GROQ_API_KEY_2 is set — AI endpoints will return an error until at least one is configured",
+  );
 }
 
-export const groqClient = apiKey
-  ? new Groq({ apiKey })
-  : null;
+const clients: Groq[] = [];
+if (apiKey1) clients.push(new Groq({ apiKey: apiKey1 }));
+if (apiKey2) clients.push(new Groq({ apiKey: apiKey2 }));
+
+let currentIndex = 0;
+
+/** Returns the next available Groq client, rotating between configured keys */
+export function requireGroq(): Groq {
+  if (clients.length === 0) {
+    throw new Error(
+      "No Groq API key is configured. Set GROQ_API_KEY (and optionally GROQ_API_KEY_2) in Replit Secrets.",
+    );
+  }
+  const client = clients[currentIndex % clients.length]!;
+  currentIndex = (currentIndex + 1) % clients.length;
+  return client;
+}
 
 export const GROQ_MODEL = "llama-3.3-70b-versatile";
-
-export function requireGroq(): Groq {
-  if (!groqClient) {
-    throw new Error("GROQ_API_KEY environment variable is not configured. Set it in Replit Secrets to enable AI features.");
-  }
-  return groqClient;
-}
 
 export async function chatCompletion(
   systemPrompt: string,
