@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: StadiumSense AI — FIFA World Cup 2026 Stadium Operations API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: ai
+    description: AI-powered operations using Groq
+  - name: crowd
+    description: Crowd intelligence data
+  - name: incidents
+    description: Incident management
 paths:
   /healthz:
     get:
@@ -24,6 +30,329 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /ai/copilot:
+    post:
+      operationId: aiCopilotChat
+      tags: [ai]
+      summary: AI Operations Copilot
+      description: Send a message to the stadium operations AI copilot powered by Groq
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CopilotMessageInput"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CopilotResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/crowd-analysis:
+    post:
+      operationId: aiCrowdAnalysis
+      tags: [ai]
+      summary: AI Crowd Intelligence Analysis
+      description: Generate AI predictions and recommendations for current crowd conditions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrowdAnalysisInput"
+      responses:
+        "200":
+          description: AI crowd analysis and recommendations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrowdAnalysisResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/navigation:
+    post:
+      operationId: aiNavigation
+      tags: [ai]
+      summary: Smart Navigation Assistant
+      description: Natural language navigation query for stadium locations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NavigationQueryInput"
+      responses:
+        "200":
+          description: Navigation answer with directions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NavigationResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/translate:
+    post:
+      operationId: aiTranslate
+      tags: [ai]
+      summary: Multilingual AI Assistant
+      description: Translate or respond to fan questions in multiple languages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslationInput"
+      responses:
+        "200":
+          description: Translated response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslationResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/transportation-recommendation:
+    post:
+      operationId: aiTransportationRecommendation
+      tags: [ai]
+      summary: Transportation & Sustainability AI Recommendation
+      description: Generate AI recommendations for transportation load and sustainability metrics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransportationMetricsInput"
+      responses:
+        "200":
+          description: AI transportation and sustainability recommendation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransportationRecommendationResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/incident-priority:
+    post:
+      operationId: aiIncidentPriority
+      tags: [ai]
+      summary: Incident AI Priority Assessment
+      description: Get AI-suggested priority level and nearest-response recommendation for an incident
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncidentPriorityInput"
+      responses:
+        "200":
+          description: AI priority assessment and recommendation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentPriorityResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /crowd/gates:
+    get:
+      operationId: getCrowdGates
+      tags: [crowd]
+      summary: Get crowd density data for all gates
+      description: Returns live/simulated crowd density, wait times, and flow rates for all stadium gates
+      responses:
+        "200":
+          description: Crowd gate data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GateCrowdData"
+
+  /incidents:
+    get:
+      operationId: listIncidents
+      tags: [incidents]
+      summary: List all incidents
+      description: Returns all logged incidents ordered by creation time descending
+      responses:
+        "200":
+          description: List of incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Incident"
+    post:
+      operationId: createIncident
+      tags: [incidents]
+      summary: Log a new incident
+      description: Submit a new incident report from a volunteer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncidentInput"
+      responses:
+        "201":
+          description: Incident created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /incidents/{id}:
+    patch:
+      operationId: updateIncident
+      tags: [incidents]
+      summary: Update incident status
+      description: Update the status or resolution notes of an incident
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncidentUpdate"
+      responses:
+        "200":
+          description: Updated incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +363,387 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    # AI Schemas
+    CopilotMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+      required:
+        - role
+        - content
+
+    CopilotMessageInput:
+      type: object
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/CopilotMessage"
+      required:
+        - message
+
+    CopilotResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+        tokensUsed:
+          type: integer
+      required:
+        - reply
+        - tokensUsed
+
+    CrowdGateSnapshot:
+      type: object
+      properties:
+        gateId:
+          type: string
+        density:
+          type: number
+        waitMinutes:
+          type: number
+        flowRate:
+          type: number
+      required:
+        - gateId
+        - density
+        - waitMinutes
+        - flowRate
+
+    CrowdAnalysisInput:
+      type: object
+      properties:
+        gates:
+          type: array
+          items:
+            $ref: "#/components/schemas/CrowdGateSnapshot"
+        matchPhase:
+          type: string
+          enum: [pre-match, in-progress, half-time, post-match]
+      required:
+        - gates
+        - matchPhase
+
+    CrowdAnalysisResponse:
+      type: object
+      properties:
+        prediction:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        summary:
+          type: string
+      required:
+        - prediction
+        - recommendations
+        - riskLevel
+        - summary
+
+    NavigationQueryInput:
+      type: object
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 500
+        currentLocation:
+          type: ["string", "null"]
+        language:
+          type: string
+          enum: [en, hi, es, fr, ar, pt]
+      required:
+        - query
+
+    NavigationResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        nearestLocation:
+          type: ["string", "null"]
+        estimatedWalkMinutes:
+          type: ["number", "null"]
+        directions:
+          type: array
+          items:
+            type: string
+      required:
+        - answer
+        - directions
+
+    TranslationInput:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        targetLanguage:
+          type: string
+          enum: [en, hi, es, fr, ar, pt]
+        sourceLanguage:
+          type: ["string", "null"]
+      required:
+        - text
+        - targetLanguage
+
+    TranslationResponse:
+      type: object
+      properties:
+        translatedText:
+          type: string
+        detectedSourceLanguage:
+          type: ["string", "null"]
+        targetLanguage:
+          type: string
+      required:
+        - translatedText
+        - targetLanguage
+
+    TransportMode:
+      type: object
+      properties:
+        mode:
+          type: string
+        currentLoad:
+          type: number
+        capacity:
+          type: number
+        predictedPeakMinutes:
+          type: integer
+      required:
+        - mode
+        - currentLoad
+        - capacity
+        - predictedPeakMinutes
+
+    SustainabilityMetric:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        target:
+          type: number
+      required:
+        - name
+        - value
+        - unit
+        - target
+
+    TransportationMetricsInput:
+      type: object
+      properties:
+        transportModes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransportMode"
+        sustainabilityMetrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/SustainabilityMetric"
+        attendanceCount:
+          type: integer
+        matchPhase:
+          type: string
+          enum: [pre-match, in-progress, half-time, post-match]
+      required:
+        - transportModes
+        - sustainabilityMetrics
+        - attendanceCount
+        - matchPhase
+
+    TransportationRecommendationResponse:
+      type: object
+      properties:
+        recommendation:
+          type: string
+        urgentActions:
+          type: array
+          items:
+            type: string
+        sustainabilitySummary:
+          type: string
+        overallStatus:
+          type: string
+          enum: [normal, advisory, warning, critical]
+      required:
+        - recommendation
+        - urgentActions
+        - sustainabilitySummary
+        - overallStatus
+
+    IncidentPriorityInput:
+      type: object
+      properties:
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+      required:
+        - location
+        - description
+        - severity
+
+    IncidentPriorityResponse:
+      type: object
+      properties:
+        suggestedPriority:
+          type: string
+          enum: [P1, P2, P3, P4]
+        priorityLabel:
+          type: string
+        nearestResponse:
+          type: string
+        recommendation:
+          type: string
+        estimatedResponseMinutes:
+          type: integer
+      required:
+        - suggestedPriority
+        - priorityLabel
+        - nearestResponse
+        - recommendation
+        - estimatedResponseMinutes
+
+    # Crowd Data Schemas
+    GateCrowdData:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        section:
+          type: string
+        density:
+          type: number
+          description: 0.0 to 1.0, fraction of capacity
+        currentCount:
+          type: integer
+        capacity:
+          type: integer
+        waitMinutes:
+          type: number
+        flowRate:
+          type: integer
+          description: People per minute flowing through the gate
+        status:
+          type: string
+          enum: [open, congested, critical, closed]
+        trend:
+          type: string
+          enum: [increasing, stable, decreasing]
+      required:
+        - id
+        - name
+        - section
+        - density
+        - currentCount
+        - capacity
+        - waitMinutes
+        - flowRate
+        - status
+        - trend
+
+    # Incident Schemas
+    Incident:
+      type: object
+      properties:
+        id:
+          type: integer
+        location:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        status:
+          type: string
+          enum: [open, in-progress, resolved]
+        aiPriority:
+          type: ["string", "null"]
+          enum: [P1, P2, P3, P4, null]
+        aiRecommendation:
+          type: ["string", "null"]
+        reportedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - location
+        - description
+        - severity
+        - status
+        - createdAt
+        - updatedAt
+
+    IncidentInput:
+      type: object
+      properties:
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        reportedBy:
+          type: ["string", "null"]
+      required:
+        - location
+        - description
+        - severity
+
+    IncidentUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [open, in-progress, resolved]
+        aiPriority:
+          type: ["string", "null"]
+          enum: [P1, P2, P3, P4, null]
+        aiRecommendation:
+          type: ["string", "null"]
