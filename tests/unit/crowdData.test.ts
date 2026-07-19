@@ -102,8 +102,12 @@ describe("severityToPriority mapping", () => {
 
 const SUPPORTED_LANGUAGES = ["en", "hi", "es", "fr", "ar", "pt"];
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English", hi: "Hindi", es: "Spanish",
-  fr: "French", ar: "Arabic", pt: "Portuguese",
+  en: "English",
+  hi: "Hindi",
+  es: "Spanish",
+  fr: "French",
+  ar: "Arabic",
+  pt: "Portuguese",
 };
 
 describe("supportedLanguages", () => {
@@ -173,7 +177,10 @@ describe("debounce", () => {
 type FontSize = "sm" | "md" | "lg" | "xl";
 
 const FONT_SIZE_MAP: Record<FontSize, number> = {
-  sm: 14, md: 16, lg: 18, xl: 20,
+  sm: 14,
+  md: 16,
+  lg: 18,
+  xl: 20,
 };
 
 function isValidFontSize(size: string): size is FontSize {

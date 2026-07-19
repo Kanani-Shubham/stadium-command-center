@@ -10,7 +10,7 @@ Thank you for your interest in contributing! This document describes the develop
 
 - [Node.js](https://nodejs.org) 20+
 - [pnpm](https://pnpm.io) 10+ (`npm install -g pnpm`)
-- PostgreSQL (or use the Replit-managed database)
+- PostgreSQL (local instance, Docker container, or cloud-hosted database)
 - A [Groq API key](https://console.groq.com) for AI features
 
 ### 1. Clone & Install

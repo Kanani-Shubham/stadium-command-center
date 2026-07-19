@@ -46,13 +46,14 @@ pnpm run db:studio
 **Crowd density is not stored in the database.** It is simulated deterministically in `lib/crowdData.ts` and recomputed on every `GET /api/crowd/gates` request. The simulation seed rotates every 30 seconds, producing realistic variation without persistence overhead.
 
 This design choice:
+
 - Eliminates a write-heavy timeseries table for demo purposes
 - Keeps the database focused on durable operational data (incidents)
 - Allows the app to work identically in any environment without data population
 
 ## Connection
 
-The database URL is provided via the `DATABASE_URL` environment variable, automatically set by Replit's managed PostgreSQL. Drizzle connects via `postgres-js` using the standard connection string format:
+The database URL is provided via the `DATABASE_URL` environment variable. Drizzle connects via `node-postgres` (`pg` library) using the standard connection string format:
 
 ```
 postgresql://user:password@host:5432/dbname

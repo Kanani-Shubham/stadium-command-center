@@ -22,23 +22,30 @@ app.use(
   }),
 );
 
-// ── CORS — restrict to same Replit domain in production ──────────────────────
+// ── CORS — restrict to allowed origins or localhost ──────────────────────────
 app.use(
   cors({
     origin: (origin, callback) => {
+      const allowedOrigins = process.env.ALLOWED_ORIGINS
+        ? process.env.ALLOWED_ORIGINS.split(",")
+        : [];
       if (!origin) {
-        // Server-to-server / curl requests — allow in development only
+        // Server-to-server / curl requests — allow in development/test
         if (process.env["NODE_ENV"] !== "production") {
           return callback(null, true);
         }
         return callback(new Error("No origin header"), false);
       }
-      // Allow any *.replit.dev subdomain (preview + deployed)
-      if (/^https?:\/\/[^/]+\.replit\.dev(:\d+)?$/.test(origin)) {
+      // Allow configured origins
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      // Allow localhost in development
-      if (process.env["NODE_ENV"] !== "production" && /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
+      // Allow localhost (development & testing)
+      if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      // Allow 127.0.0.1
+      if (/^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) {
         return callback(null, true);
       }
       callback(new Error(`CORS: origin ${origin} not allowed`), false);

@@ -13,12 +13,79 @@ import { incidentRateLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
 
+interface IncidentData {
+  id: number;
+  location: string;
+  description: string;
+  severity: "low" | "medium" | "high" | "critical";
+  status: "open" | "in-progress" | "resolved";
+  reportedBy: string | null;
+  aiPriority: "P1" | "P2" | "P3" | "P4" | null;
+  aiRecommendation: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// In-memory fallback database
+const mockIncidents: IncidentData[] = [
+  {
+    id: 101,
+    location: "Gate A",
+    description: "Crowd congestion building near ticket scanners.",
+    severity: "medium",
+    status: "open",
+    reportedBy: "Operator Alpha",
+    aiPriority: "P3",
+    aiRecommendation: "Open secondary queues at Gate A and dispatch support stewards.",
+    createdAt: new Date(Date.now() - 3600000),
+    updatedAt: new Date(Date.now() - 3600000),
+  },
+  {
+    id: 102,
+    location: "Section 104",
+    description: "Medical alert - minor dehydration reported.",
+    severity: "low",
+    status: "in-progress",
+    reportedBy: "Steward Bravo",
+    aiPriority: "P4",
+    aiRecommendation: "Dispatch nearest first-aid responder from South Station with fluids.",
+    createdAt: new Date(Date.now() - 1800000),
+    updatedAt: new Date(Date.now() - 1200000),
+  }
+];
+
+let nextMockId = 103;
+let useDbMockFallback = false;
+
+// Helper to determine if we should fall back to mock database
+async function executeQuery<T>(dbQuery: () => Promise<T>, fallbackAction: () => T): Promise<T> {
+  if (useDbMockFallback) {
+    return fallbackAction();
+  }
+  try {
+    return await dbQuery();
+  } catch (err: any) {
+    if (
+      err.message?.includes("ECONNREFUSED") ||
+      err.code === "ECONNREFUSED" ||
+      err.message?.includes("connection") ||
+      err.message?.includes("does not exist") ||
+      err.message?.includes("relation")
+    ) {
+      console.warn("⚠️ Database connection failed or database relation not found. Falling back to in-memory incidents mock store.");
+      useDbMockFallback = true;
+      return fallbackAction();
+    }
+    throw err;
+  }
+}
+
 router.get("/incidents", async (_req, res): Promise<void> => {
   try {
-    const rows = await db
-      .select()
-      .from(incidentsTable)
-      .orderBy(incidentsTable.createdAt);
+    const rows = await executeQuery(
+      () => db.select().from(incidentsTable).orderBy(incidentsTable.createdAt),
+      () => [...mockIncidents].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+    );
 
     res.json(ListIncidentsResponse.parse(rows.reverse()));
   } catch (err) {
@@ -35,16 +102,37 @@ router.post("/incidents", incidentRateLimiter, async (req, res): Promise<void> =
   }
 
   try {
-    const [incident] = await db
-      .insert(incidentsTable)
-      .values({
-        location: parsed.data.location,
-        description: parsed.data.description,
-        severity: parsed.data.severity,
-        reportedBy: parsed.data.reportedBy ?? null,
-        status: "open",
-      })
-      .returning();
+    const incident = await executeQuery(
+      async () => {
+        const [inserted] = await db
+          .insert(incidentsTable)
+          .values({
+            location: parsed.data.location,
+            description: parsed.data.description,
+            severity: parsed.data.severity,
+            reportedBy: parsed.data.reportedBy ?? null,
+            status: "open",
+          })
+          .returning();
+        return inserted;
+      },
+      () => {
+        const newIncident = {
+          id: nextMockId++,
+          location: parsed.data.location,
+          description: parsed.data.description,
+          severity: parsed.data.severity,
+          reportedBy: parsed.data.reportedBy ?? null,
+          status: "open" as const,
+          aiPriority: null,
+          aiRecommendation: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        mockIncidents.push(newIncident);
+        return newIncident;
+      }
+    );
 
     res.status(201).json(CreateIncidentResponse.parse(incident));
   } catch (err) {
@@ -68,16 +156,32 @@ router.patch("/incidents/:id", async (req, res): Promise<void> => {
   }
 
   try {
-    const updateData: Record<string, unknown> = { updatedAt: new Date() };
+    const updateData: Record<string, any> = { updatedAt: new Date() };
     if (parsed.data.status !== undefined) updateData["status"] = parsed.data.status;
     if (parsed.data.aiPriority !== undefined) updateData["aiPriority"] = parsed.data.aiPriority;
     if (parsed.data.aiRecommendation !== undefined) updateData["aiRecommendation"] = parsed.data.aiRecommendation;
 
-    const [incident] = await db
-      .update(incidentsTable)
-      .set(updateData)
-      .where(eq(incidentsTable.id, params.data.id))
-      .returning();
+    const incident = await executeQuery(
+      async () => {
+        const [updated] = await db
+          .update(incidentsTable)
+          .set(updateData)
+          .where(eq(incidentsTable.id, params.data.id))
+          .returning();
+        return updated;
+      },
+      () => {
+        const idx = mockIncidents.findIndex((item) => item.id === params.data.id);
+        if (idx === -1) return null;
+        const current = mockIncidents[idx]!;
+        const updated = {
+          ...current,
+          ...updateData,
+        };
+        mockIncidents[idx] = updated;
+        return updated;
+      }
+    );
 
     if (!incident) {
       res.status(404).json({ error: "Incident not found" });

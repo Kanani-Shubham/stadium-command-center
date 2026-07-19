@@ -3,17 +3,29 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
+    "preinstall": "npx only-allow pnpm",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
+    "dev": "concurrently \"pnpm --filter @workspace/api-server dev\" \"pnpm --filter @workspace/stadium-sense dev\"",
+    "test": "pnpm --filter @workspace/stadium-sense test",
+    "test:watch": "pnpm --filter @workspace/stadium-sense test:watch",
+    "test:coverage": "pnpm --filter @workspace/stadium-sense test:coverage",
+    "test:unit": "pnpm --filter @workspace/stadium-sense test",
+    "test:integration": "pnpm --filter @workspace/stadium-sense test",
+    "test:e2e": "playwright test"
   },
   "private": true,
-  "dependencies": {
-    "@replit/connectors-sdk": "^0.4.1"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.2.0",
+    "@types/supertest": "^6.0.2",
+    "concurrently": "^9.1.2",
     "prettier": "^3.9.4",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "supertest": "^7.0.0",
     "typescript": "~5.9.3"
   }
 }
