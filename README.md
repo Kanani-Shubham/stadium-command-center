@@ -22,7 +22,7 @@
 
 ### 💼 LinkedIn Showcase
 
-🔗 [LinkedIn Project Presentation & Video](https://www.linkedin.com/in/kanani-shubham) _(Please update this placeholder with your post link when published)_
+🔗 [LinkedIn Project Presentation & Video & Post]([https://www.linkedin.com/in/kanani-shubham](https://www.linkedin.com/posts/shubham-kanani-5694802b3_i-am-excited-to-share-stadiumsense-ai-an-ugcPost-7484666759787167744-iq4a/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEtaqyEB5j6zAkPtAsqNrEsMoNzWqC_Rigs))
 
 ### 🐙 GitHub Repository
 
