@@ -18,11 +18,11 @@
 
 ### 🌐 Production URL
 
-🔗 [StadiumSense AI Live Demo](https://stadium-command-center.onrender.com) _(Placeholder - update with your hosting service URL)_
+🔗 [StadiumSense AI Live Demo](https://stadiumsens-ai.netlify.app/)
 
 ### 💼 LinkedIn Showcase
 
-🔗 [LinkedIn Project Presentation & Video](https://www.linkedin.com/in/kanani-shubham) _(Placeholder - update with your post URL)_
+🔗 [LinkedIn Project Presentation & Video](https://www.linkedin.com/in/kanani-shubham) _(Please update this placeholder with your post link when published)_
 
 ### 🐙 GitHub Repository
 
