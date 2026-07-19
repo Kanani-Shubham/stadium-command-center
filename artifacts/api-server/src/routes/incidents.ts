@@ -64,13 +64,14 @@ async function executeQuery<T>(dbQuery: () => Promise<T>, fallbackAction: () => 
   }
   try {
     return await dbQuery();
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as Record<string, any>;
     if (
-      err.message?.includes("ECONNREFUSED") ||
-      err.code === "ECONNREFUSED" ||
-      err.message?.includes("connection") ||
-      err.message?.includes("does not exist") ||
-      err.message?.includes("relation")
+      error.message?.includes("ECONNREFUSED") ||
+      error.code === "ECONNREFUSED" ||
+      error.message?.includes("connection") ||
+      error.message?.includes("does not exist") ||
+      error.message?.includes("relation")
     ) {
       console.warn("⚠️ Database connection failed or database relation not found. Falling back to in-memory incidents mock store.");
       useDbMockFallback = true;
@@ -156,7 +157,7 @@ router.patch("/incidents/:id", async (req, res): Promise<void> => {
   }
 
   try {
-    const updateData: Record<string, any> = { updatedAt: new Date() };
+    const updateData: Partial<typeof incidentsTable.$inferInsert> = { updatedAt: new Date() };
     if (parsed.data.status !== undefined) updateData["status"] = parsed.data.status;
     if (parsed.data.aiPriority !== undefined) updateData["aiPriority"] = parsed.data.aiPriority;
     if (parsed.data.aiRecommendation !== undefined) updateData["aiRecommendation"] = parsed.data.aiRecommendation;

@@ -72,7 +72,7 @@ export default function NavigationPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Response Language</label>
-                <Select value={language} onValueChange={(val: any) => setLanguage(val)}>
+                <Select value={language} onValueChange={(val: NavigationQueryInputLanguage) => setLanguage(val)}>
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder="Language" />
                   </SelectTrigger>

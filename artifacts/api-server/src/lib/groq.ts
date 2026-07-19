@@ -16,11 +16,17 @@ if (apiKey2) clients.push(new Groq({ apiKey: apiKey2 }));
 
 let currentIndex = 0;
 
-/** Returns the next available Groq client, rotating between configured keys */
+/**
+ * Round-robin key rotation: returns the next available Groq client,
+ * rotating between configured primary and secondary keys to double API rate limits.
+ * 
+ * @returns An initialized Groq client instance
+ * @throws An error if no keys are configured in the environment
+ */
 export function requireGroq(): Groq {
   if (clients.length === 0) {
     throw new Error(
-      "No Groq API key is configured. Set GROQ_API_KEY (and optionally GROQ_API_KEY_2) in Replit Secrets.",
+      "No Groq API key is configured. Set GROQ_API_KEY (and optionally GROQ_API_KEY_2) in environment variables.",
     );
   }
   const client = clients[currentIndex % clients.length]!;
@@ -28,8 +34,19 @@ export function requireGroq(): Groq {
   return client;
 }
 
+/**
+ * Standard Llama-3.3 70B model chosen for high accuracy JSON reasoning and low latency.
+ */
 export const GROQ_MODEL = "llama-3.3-70b-versatile";
 
+/**
+ * Invokes the Groq SDK chat completions API with the configured model.
+ * 
+ * @param systemPrompt - Instructions defining the AI role and context rules
+ * @param userContent - The specific user request/metrics payload
+ * @param maxTokens - Output token limit (defaults to 512)
+ * @returns The string response content returned by the model
+ */
 export async function chatCompletion(
   systemPrompt: string,
   userContent: string,

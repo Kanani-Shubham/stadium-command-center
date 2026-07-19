@@ -98,7 +98,7 @@ export default function MultilingualPage() {
                 <Languages className="h-4 w-4" />
                 Target Language
               </CardTitle>
-              <Select value={targetLanguage} onValueChange={(val: any) => setTargetLanguage(val)}>
+              <Select value={targetLanguage} onValueChange={(val: TranslationInputTargetLanguage) => setTargetLanguage(val)}>
                 <SelectTrigger className="w-[180px] h-8 bg-background border-primary/20">
                   <SelectValue placeholder="Select Language" />
                 </SelectTrigger>

@@ -167,46 +167,76 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm">
-          <CardHeader className="border-b border-border/50 bg-muted/20">
-            <CardTitle className="text-base font-semibold">Quick Links</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 grid gap-3">
-            <Link href="/copilot" className="group flex items-center justify-between rounded-lg border p-4 hover-elevate transition-all">
-              <div className="flex items-center gap-3">
-                <div className="rounded-md bg-primary/10 p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Bot className="h-5 w-5" />
+        <div className="space-y-6">
+          <Card className="shadow-sm">
+            <CardHeader className="border-b border-border/50 bg-muted/20">
+              <CardTitle className="text-base font-semibold">Quick Links</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 grid gap-3">
+              <Link href="/copilot" className="group flex items-center justify-between rounded-lg border p-4 hover-elevate transition-all">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-md bg-primary/10 p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <Bot className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-sm">AI Copilot</div>
+                    <div className="text-xs text-muted-foreground">Ask operations questions</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-medium text-sm">AI Copilot</div>
-                  <div className="text-xs text-muted-foreground">Ask operations questions</div>
+              </Link>
+              <Link href="/crowd" className="group flex items-center justify-between rounded-lg border p-4 hover-elevate transition-all">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-md bg-primary/10 p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-sm">Crowd Int.</div>
+                    <div className="text-xs text-muted-foreground">{congestedGates} congested gates</div>
+                  </div>
+                </div>
+              </Link>
+              <Link href="/transportation" className="group flex items-center justify-between rounded-lg border p-4 hover-elevate transition-all">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-md bg-primary/10 p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <Truck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-sm">Transport</div>
+                    <div className="text-xs text-muted-foreground">Review sustainability</div>
+                  </div>
+                </div>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm border-primary/20 bg-primary/5 hover-elevate transition-all">
+            <CardHeader className="border-b border-primary/10 bg-primary/10 pb-3">
+              <CardTitle className="text-sm font-medium text-primary flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Volunteer Coordination
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Active Stewards:</span>
+                <span className="font-semibold text-foreground">342 / 350 deployed</span>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Sector Coverage:</span>
+                  <span className="text-foreground font-medium">97.7%</span>
+                </div>
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full" style={{ width: "97.7%" }} />
                 </div>
               </div>
-            </Link>
-            <Link href="/crowd" className="group flex items-center justify-between rounded-lg border p-4 hover-elevate transition-all">
-              <div className="flex items-center gap-3">
-                <div className="rounded-md bg-primary/10 p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Users className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="font-medium text-sm">Crowd Int.</div>
-                  <div className="text-xs text-muted-foreground">{congestedGates} congested gates</div>
-                </div>
+              <div className="text-xs border-t pt-2 border-primary/10 text-muted-foreground">
+                <strong className="text-primary block mb-0.5">AI Steward Suggestion:</strong>
+                Re-allocate 5 floating volunteers to Gate A check-in queue to support peak arrival flow.
               </div>
-            </Link>
-            <Link href="/transportation" className="group flex items-center justify-between rounded-lg border p-4 hover-elevate transition-all">
-              <div className="flex items-center gap-3">
-                <div className="rounded-md bg-primary/10 p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Truck className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="font-medium text-sm">Transport</div>
-                  <div className="text-xs text-muted-foreground">Review sustainability</div>
-                </div>
-              </div>
-            </Link>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

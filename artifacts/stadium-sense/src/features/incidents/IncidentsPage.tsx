@@ -80,7 +80,7 @@ export default function IncidentsPage() {
     }
   };
 
-  const updateStatus = async (status: any) => {
+  const updateStatus = async (status: Incident["status"]) => {
     if (!selectedIncident) return;
     try {
       await updateMutation.mutateAsync({

@@ -305,18 +305,20 @@ The application complies with **WCAG 2.1 AA** guidelines:
 
 ---
 
-## Challenge Alignment
+## Challenge Requirement Mapping
 
-| official Requirements        | How StadiumSense AI Meets the Criteria                                                             |
-| :--------------------------- | :------------------------------------------------------------------------------------------------- |
-| **Smart Navigation**         | Smart Navigation page answers wayfinding requests in 6 languages, estimating steps and walk times. |
-| **Crowd Management**         | 12-gate heatmap, 15-minute crowd projections, and automated safety recommendations.                |
-| **Accessibility Options**    | WCAG 2.1 Level AA compliance, font resizing, high contrast, and reduced motion flags.              |
-| **Transit Operations**       | Transportation load levels, staggered egress tips, and net-zero compliance tracking.               |
-| **Sustainability Goals**     | carbon tracking indicators mapped against net-zero efficiency targets.                             |
-| **Multilingual Engine**      | Real-time translation supporting 6 languages with automated source detection.                      |
-| **Operational Intelligence** | AI Command Copilot and Incident Priority triage (P1-P4 classification).                            |
-| **Real-time Diagnostics**    | Aggregated KPI cards with auto-refresh intervals every 30 seconds.                                 |
+| Challenge Requirement | StadiumSense AI Feature |
+| :--- | :--- |
+| Crowd Management | ✅ Crowd Intelligence & Heatmaps |
+| Navigation | ✅ AI Wayfinding & Smart Navigation |
+| Accessibility | ✅ Accessibility Options (WCAG 2.1 AA) |
+| Transportation | ✅ Transit Operations Dashboard |
+| Multilingual | ✅ Real-time AI Translation Engine |
+| Sustainability | ✅ Sustainability Analytics & Carbon Tracking |
+| Emergency | ✅ Incident Triage & Emergency Response |
+| Volunteer Coordination | ✅ Deployed Stewards & Shift Dashboard |
+| Command Center | ✅ Real-time Stadium Command Console |
+| Analytics | ✅ Egress Forecasts & KPI Charts |
 
 ---
 
